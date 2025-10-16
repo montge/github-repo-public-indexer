@@ -77,7 +77,8 @@ class JSONGenerator:
     def _backup_file(self, file_path: Path) -> None:
         """Backup existing file with timestamp."""
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        backup_path = file_path.with_stem(f"{file_path.stem}.{timestamp}")
+        # Python 3.8 compatible (with_stem() was added in 3.9)
+        backup_path = file_path.parent / f"{file_path.stem}.{timestamp}{file_path.suffix}"
 
         try:
             file_path.rename(backup_path)
