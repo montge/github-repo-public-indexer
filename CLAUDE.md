@@ -223,6 +223,7 @@ Key libraries:
 - `JSON_SCHEMA.md` - Detailed output schema
 - `WORKFLOW.md` - End-to-end process guide
 - `PROMPT_TEMPLATE.md` - Template for Phase 2 AI generation
+- `CONTRIBUTING_TEMPLATE.md` - Template for index repository CONTRIBUTING.md
 - `USAGE.md` - Practical usage examples
 - `QUICK_REFERENCE.md` - One-page summary
 

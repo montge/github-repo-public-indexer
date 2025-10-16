@@ -16,6 +16,7 @@
 | **JSON_SCHEMA.md** | Structure of the metadata JSON file |
 | **WORKFLOW.md** | Step-by-step execution guide |
 | **PROMPT_TEMPLATE.md** | Template for AI documentation generation |
+| **CONTRIBUTING_TEMPLATE.md** | Template CONTRIBUTING.md for index repos |
 | **README.md** | This project's overview and status |
 
 ## Phase 1: Data Collection

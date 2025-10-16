@@ -85,6 +85,7 @@ A **two-phase automated approach**:
 
 ### Phase 2 Documentation Generation
 - **[PROMPT_TEMPLATE.md](PROMPT_TEMPLATE.md)** - Template for Cursor/Windsurf
+- **[CONTRIBUTING_TEMPLATE.md](CONTRIBUTING_TEMPLATE.md)** - Template CONTRIBUTING.md for index repositories
 
 ## Implementation Details
 

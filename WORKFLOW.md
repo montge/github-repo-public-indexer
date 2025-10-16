@@ -111,9 +111,19 @@ cd /path/to/your/workspace
 git clone git@github.com:yourorg/your-public-repos-index.git
 cd your-public-repos-index
 
-# Copy the generated JSON file here
+# Backup current JSON (for comparison during update)
+if [ -f repositories.json ]; then
+  cp repositories.json repositories.previous.json
+fi
+
+# Copy the newly generated JSON file
 cp /path/to/github-repo-public-indexer/repositories.json .
 ```
+
+**Best Practice:** Keep `repositories.json` in your public repository for:
+- Transparency (shows the raw data)
+- Comparison during updates (track what changed)
+- API access (others can consume the structured data)
 
 #### Option B: New Repository
 
@@ -170,10 +180,13 @@ Copy the prompt from `PROMPT_TEMPLATE.md` and customize:
 
 **For UPDATING an existing README:**
 1. Paste the customized prompt into Cursor/Windsurf
-2. Attach BOTH files:
-   - `repositories.json` (new data)
+2. Attach these files:
+   - `repositories.json` (new data from latest collection)
+   - `repositories.previous.json` (previous version, if available)
    - `README.md` (existing file to update)
-3. Let the AI analyze and update the README
+3. Let the AI analyze, compare, and update the README
+   - The AI can identify new/removed repositories
+   - Note significant changes in activity or status
 
 #### 4.4 Review and Refine
 
@@ -196,10 +209,10 @@ After reviewing the generated/updated README:
 
 ```bash
 # In your target repository directory
-git add README.md
+git add README.md repositories.json
 
-# If you're also publishing the JSON file
-git add repositories.json
+# Optional: Remove the comparison file (or keep for history)
+# git rm repositories.previous.json
 
 # Commit the changes
 git commit -m "Update repository index - $(date +%Y-%m-%d)"
@@ -207,6 +220,11 @@ git commit -m "Update repository index - $(date +%Y-%m-%d)"
 # Push to GitHub
 git push
 ```
+
+**Recommendation:** Always publish `repositories.json` with your README for:
+- Data transparency
+- Programmatic access to repository metadata
+- Easier debugging and verification
 
 #### 4.6 Verify on GitHub
 
@@ -263,17 +281,20 @@ Here's how to organize your workspace:
 │
 └── my-org-public-repos/                 # Your public-facing index repo
     ├── README.md                        # Generated/updated by Cursor/Windsurf
-    ├── repositories.json                # Copied from indexer (optional to publish)
+    ├── repositories.json                # Latest data (published)
+    ├── repositories.previous.json       # Previous version (for comparison, usually git-ignored)
     └── .github/
         └── workflows/
             └── update-index.yml         # Optional: automation
 ```
 
 **Workflow:**
-1. Run `collect_repos.py` in the indexer tool directory
-2. Copy `repositories.json` to your public repo
-3. Use Cursor/Windsurf in the public repo to generate/update README
-4. Commit and push the public repo
+1. Run `collect_repos.py` in the indexer tool directory → generates `repositories.json`
+2. In public repo: backup current JSON as `repositories.previous.json`
+3. Copy new `repositories.json` to your public repo
+4. Use Cursor/Windsurf in the public repo to generate/update README
+   - Attach both JSON files (new + previous) for comparison
+5. Commit and push `README.md` and `repositories.json` to the public repo
 
 ### Step 6: Maintenance and Updates
 

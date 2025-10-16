@@ -30,12 +30,17 @@ This template provides a structured prompt to use with Cursor or Windsurf AI ass
 **Scenario 2: Updating an existing README**
 ```
 {EXISTING_README_INSTRUCTIONS} =
-"An existing README.md is attached. Please review it and update the repository information while preserving:
-- The introduction and organizational context
-- The 'How to Contribute' section
-- The 'Code of Conduct' link
-- Any other sections that don't contain repository listings
-Update all repository data, statistics, and the generation timestamp."
+"An existing README.md is attached, along with the previous repositories.json for comparison.
+
+Please:
+1. Compare the two JSON files to identify changes (new repos, archived repos, significant activity changes)
+2. Update the README while preserving:
+   - The introduction and organizational context
+   - The 'How to Contribute' section
+   - The 'Code of Conduct' link
+   - Any other sections that don't contain repository listings
+3. Update all repository data, statistics, and the generation timestamp
+4. Optionally add a 'Recent Changes' section highlighting major updates since the last generation"
 ```
 
 **Scenario 3: Major overhaul of existing README**
@@ -70,12 +75,18 @@ Example: "We are an open-source community focused on data science tools and educ
 
 **If UPDATING an existing README:**
 - Review the existing README.md carefully
+- **If available**, compare the new `repositories.json` with the previous version to identify:
+  - New repositories added
+  - Repositories that were archived or removed
+  - Significant changes in activity (stars, last updated)
+  - License changes
 - Preserve any manual sections NOT related to repository listings (e.g., "Contributing", "Code of Conduct", "How to Use This Index", custom introductions)
-- Update the repository listings based on repositories.json
+- Update the repository listings based on the new repositories.json
 - Update statistics and metadata (generation date, total count)
 - Maintain the existing categorization scheme if it's working well, or propose improvements
 - Flag any repositories that were in the old README but are missing from the new data
 - Preserve any special formatting or customizations that don't conflict with the data
+- **Consider adding a "What's New" or "Recent Changes" section** if significant changes occurred
 
 **Important for Updates:**
 - Do NOT remove custom sections added manually (look for sections that reference things not in repositories.json)
@@ -84,6 +95,7 @@ Example: "We are an open-source community focused on data science tools and educ
 - DO add new repositories that appear in repositories.json
 - DO remove or mark as "No longer available" repositories that are missing from the new data
 - DO preserve any hand-crafted introductions or organizational context
+- DO note the previous data file timestamp if comparing old vs new JSON
 
 ## Input Data
 
@@ -106,9 +118,11 @@ Create a well-organized README with:
 **Header Section:**
 - Title: "{ORGANIZATION_NAME} - Repository Index"
 - Brief introduction about the organization
+- Badges (optional): ![Last Updated](https://img.shields.io/badge/Last%20Updated-{date}-blue) ![Total Repos](https://img.shields.io/badge/Total%20Repos-{count}-green)
 - Last updated timestamp (from metadata.generated_at)
 - Total repository count
 - Navigation/Table of Contents
+- Quick note: "📚 This is an automatically generated index of our public repositories"
 
 **Repository Categories:**
 Organize repositories into logical categories. Suggested categories:
@@ -171,14 +185,79 @@ Create a high-level summary with:
 ### 4. Metadata and Transparency
 
 Include at the bottom:
-- Generation date and time
-- Data collection method
-- Note: "This index is automatically generated from repository metadata"
-- Link to the raw JSON file (if published in the same repo)
-- Link to the indexer tool: https://github.com/montge/github-repo-public-indexer
-- How to request updates or corrections
-- Tool version used (from metadata.tool_version)
-- Target repository information: {TARGET_REPO_NAME} at {TARGET_REPO_URL}
+
+**About This Document Section:**
+Create a clear section explaining:
+```markdown
+## About This Document
+
+This repository index is automatically generated using the [GitHub Organization Repository Indexer](https://github.com/montge/github-repo-public-indexer).
+
+**Generation Details:**
+- **Generated:** {metadata.generated_at}
+- **Total Repositories:** {metadata.total_repositories}
+- **Indexer Version:** {metadata.tool_version}
+- **Data Source:** GitHub API v{metadata.github_api_version}
+
+**How It Works:**
+1. The indexer collects metadata from all repositories in the {ORGANIZATION_NAME} organization
+2. Data is compiled into a structured JSON file
+3. This README is generated from that data using AI assistance
+
+**Data Files:**
+- [Raw JSON Data](./repositories.json) - Complete repository metadata
+- [Indexer Tool](https://github.com/montge/github-repo-public-indexer) - Open source under Apache 2.0
+```
+
+**Contributing Section:**
+Include guidelines for updating the index:
+```markdown
+## Contributing
+
+### Updating This Index
+
+This repository index is automatically generated. To update it:
+
+1. **Request an Update:** Open an issue requesting a refresh of the repository index
+2. **Report Inaccuracies:** If you notice outdated or incorrect information, please open an issue
+3. **Automated Updates:** This index is typically regenerated [monthly/quarterly/as-needed]
+
+### Contributing to Listed Projects
+
+To contribute to any of the repositories listed here:
+1. Visit the repository's GitHub page
+2. Review the repository's CONTRIBUTING.md (if available)
+3. Check open issues or contact the repository maintainers
+4. Follow the project's contribution guidelines
+
+### Suggesting Improvements
+
+Have suggestions for how this index could be more useful? We welcome feedback!
+- Open an issue with your suggestions
+- Describe what information would be helpful
+- Suggest new categorizations or organization schemes
+```
+
+**Footer/Credits:**
+```markdown
+---
+
+**Generated with:** [GitHub Organization Repository Indexer](https://github.com/montge/github-repo-public-indexer)
+**License:** This index document is provided as-is for informational purposes. Individual repositories maintain their own licenses.
+**Maintained by:** {ORGANIZATION_NAME}
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for information about updating this index or reporting issues.
+```
+
+**CONTRIBUTING.md File:**
+Also generate a CONTRIBUTING.md file using the template from:
+https://github.com/montge/github-repo-public-indexer/blob/main/CONTRIBUTING_TEMPLATE.md
+
+Customize it with:
+- Organization name
+- Update frequency
+- Link to Code of Conduct (if applicable)
+- Contact information
 
 ### 5. Navigation and Usability
 
@@ -440,6 +519,9 @@ Update all repository data (names, descriptions, stars, last updated dates), sta
 [... rest of prompt template ...]
 
 **Files attached:**
-- repositories.json (new data)
+- repositories.json (new data from latest collection)
+- repositories.previous.json (previous version for comparison)
 - README.md (current version to update)
+
+Note: If you don't have a previous JSON file, just attach the new one and current README.
 ```
