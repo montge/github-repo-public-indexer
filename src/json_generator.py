@@ -21,11 +21,13 @@ class JSONGenerator:
         """
         self.tool_version = tool_version
 
-    def generate_output(self,
-                       org_name: str,
-                       repositories: List[Dict[str, Any]],
-                       output_file: str,
-                       backup_previous: bool = True) -> None:
+    def generate_output(
+        self,
+        org_name: str,
+        repositories: List[Dict[str, Any]],
+        output_file: str,
+        backup_previous: bool = True,
+    ) -> None:
         """
         Generate JSON output file.
 
@@ -44,12 +46,12 @@ class JSONGenerator:
         # Create output structure
         output = {
             "metadata": self._create_metadata(org_name, len(repositories)),
-            "repositories": repositories
+            "repositories": repositories,
         }
 
         # Write to file
         try:
-            with open(output_path, 'w', encoding='utf-8') as f:
+            with open(output_path, "w", encoding="utf-8") as f:
                 json.dump(output, f, indent=2, ensure_ascii=False)
 
             logger.info(f"Output written to: {output_path}")
@@ -69,7 +71,7 @@ class JSONGenerator:
             "organization": org_name,
             "total_repositories": total_repos,
             "tool_version": self.tool_version,
-            "github_api_version": "2022-11-28"
+            "github_api_version": "2022-11-28",
         }
 
     def _backup_file(self, file_path: Path) -> None:
@@ -86,7 +88,7 @@ class JSONGenerator:
     def _validate_output(self, file_path: Path) -> None:
         """Validate the generated JSON file."""
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 data = json.load(f)
 
             # Basic validation
@@ -102,8 +104,9 @@ class JSONGenerator:
             # Verify repository count matches
             actual_count = len(data["repositories"])
             expected_count = metadata["total_repositories"]
-            assert actual_count == expected_count, \
-                f"Repository count mismatch: {actual_count} != {expected_count}"
+            assert (
+                actual_count == expected_count
+            ), f"Repository count mismatch: {actual_count} != {expected_count}"
 
             logger.info("JSON validation passed")
 
@@ -125,7 +128,7 @@ class JSONGenerator:
             Dictionary with summary statistics
         """
         try:
-            with open(output_file, 'r', encoding='utf-8') as f:
+            with open(output_file, "r", encoding="utf-8") as f:
                 data = json.load(f)
 
             repos = data["repositories"]
@@ -153,9 +156,7 @@ class JSONGenerator:
                     licenses["unlicensed"] = licenses.get("unlicensed", 0) + 1
 
             # Top repos by stars
-            top_repos = sorted(repos,
-                             key=lambda r: r["activity"]["stars"],
-                             reverse=True)[:5]
+            top_repos = sorted(repos, key=lambda r: r["activity"]["stars"], reverse=True)[:5]
 
             summary = {
                 "total_repositories": len(repos),
@@ -163,20 +164,20 @@ class JSONGenerator:
                     "active": active_count,
                     "archived": archived_count,
                     "forks": fork_count,
-                    "templates": template_count
+                    "templates": template_count,
                 },
-                "top_languages": dict(sorted(languages.items(),
-                                           key=lambda x: x[1],
-                                           reverse=True)[:10]),
+                "top_languages": dict(
+                    sorted(languages.items(), key=lambda x: x[1], reverse=True)[:10]
+                ),
                 "license_breakdown": licenses,
                 "top_starred": [
                     {
                         "name": r["basic_info"]["full_name"],
                         "stars": r["activity"]["stars"],
-                        "url": r["basic_info"]["html_url"]
+                        "url": r["basic_info"]["html_url"],
                     }
                     for r in top_repos
-                ]
+                ],
             }
 
             return summary

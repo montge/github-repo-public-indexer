@@ -64,9 +64,9 @@ class GitHubClient:
             logger.error(f"Failed to get organization '{org_name}': {e}")
             raise
 
-    def get_all_repositories(self, org_name: str,
-                            include_forks: bool = True,
-                            include_archived: bool = True) -> List[Repository.Repository]:
+    def get_all_repositories(
+        self, org_name: str, include_forks: bool = True, include_archived: bool = True
+    ) -> List[Repository.Repository]:
         """
         Fetch all repositories for an organization.
 
@@ -83,7 +83,7 @@ class GitHubClient:
 
         try:
             logger.info("Fetching repositories (this may take a while)...")
-            all_repos = org.get_repos(type='all')
+            all_repos = org.get_repos(type="all")
 
             for repo in all_repos:
                 # Apply filters

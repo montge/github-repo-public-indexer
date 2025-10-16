@@ -52,56 +52,51 @@ def setup_logging(verbose: bool = False):
     logging.basicConfig(
         level=level,
         format="%(message)s",
-        handlers=[RichHandler(console=console, rich_tracebacks=True)]
+        handlers=[RichHandler(console=console, rich_tracebacks=True)],
     )
 
 
 @click.command()
-@click.option('--org', '-o',
-              envvar='GITHUB_ORG',
-              required=True,
-              help='GitHub organization name')
-@click.option('--token', '-t',
-              envvar='GITHUB_TOKEN',
-              required=True,
-              help='GitHub personal access token')
-@click.option('--github-url', '-u',
-              envvar='GITHUB_URL',
-              default=None,
-              help='GitHub API base URL (for GitHub Enterprise Server, e.g., https://github.example.com/api/v3)')
-@click.option('--output', '-f',
-              default='repositories.json',
-              envvar='OUTPUT_FILE',
-              help='Output JSON file path')
-@click.option('--max-contributors',
-              default=5,
-              type=int,
-              help='Maximum number of top contributors to include')
-@click.option('--include-forks/--no-forks',
-              default=True,
-              help='Include forked repositories')
-@click.option('--include-archived/--no-archived',
-              default=True,
-              help='Include archived repositories')
-@click.option('--backup/--no-backup',
-              default=True,
-              help='Backup existing output file')
-@click.option('--verbose', '-v',
-              is_flag=True,
-              help='Enable verbose logging')
-@click.option('--summary',
-              is_flag=True,
-              help='Show summary after collection')
-def main(org: str,
-         token: str,
-         github_url: Optional[str],
-         output: str,
-         max_contributors: int,
-         include_forks: bool,
-         include_archived: bool,
-         backup: bool,
-         verbose: bool,
-         summary: bool):
+@click.option("--org", "-o", envvar="GITHUB_ORG", required=True, help="GitHub organization name")
+@click.option(
+    "--token", "-t", envvar="GITHUB_TOKEN", required=True, help="GitHub personal access token"
+)
+@click.option(
+    "--github-url",
+    "-u",
+    envvar="GITHUB_URL",
+    default=None,
+    help="GitHub API base URL (for GitHub Enterprise Server, e.g., https://github.example.com/api/v3)",
+)
+@click.option(
+    "--output",
+    "-f",
+    default="repositories.json",
+    envvar="OUTPUT_FILE",
+    help="Output JSON file path",
+)
+@click.option(
+    "--max-contributors", default=5, type=int, help="Maximum number of top contributors to include"
+)
+@click.option("--include-forks/--no-forks", default=True, help="Include forked repositories")
+@click.option(
+    "--include-archived/--no-archived", default=True, help="Include archived repositories"
+)
+@click.option("--backup/--no-backup", default=True, help="Backup existing output file")
+@click.option("--verbose", "-v", is_flag=True, help="Enable verbose logging")
+@click.option("--summary", is_flag=True, help="Show summary after collection")
+def main(
+    org: str,
+    token: str,
+    github_url: Optional[str],
+    output: str,
+    max_contributors: int,
+    include_forks: bool,
+    include_archived: bool,
+    backup: bool,
+    verbose: bool,
+    summary: bool,
+):
     """
     GitHub Organization Repository Indexer - Phase 1
 
@@ -136,11 +131,11 @@ def main(org: str,
         json_generator = JSONGenerator(tool_version=__version__)
 
         # Fetch repositories
-        console.print(f"\n[yellow]Fetching repositories for organization:[/yellow] [bold]{org}[/bold]")
+        console.print(
+            f"\n[yellow]Fetching repositories for organization:[/yellow] [bold]{org}[/bold]"
+        )
         repositories = github_client.get_all_repositories(
-            org,
-            include_forks=include_forks,
-            include_archived=include_archived
+            org, include_forks=include_forks, include_archived=include_archived
         )
 
         if not repositories:
@@ -158,20 +153,13 @@ def main(org: str,
             TextColumn("[progress.description]{task.description}"),
             BarColumn(),
             TaskProgressColumn(),
-            console=console
+            console=console,
         ) as progress:
-
-            task = progress.add_task(
-                "[cyan]Collecting metadata...",
-                total=len(repositories)
-            )
+            task = progress.add_task("[cyan]Collecting metadata...", total=len(repositories))
 
             for repo in repositories:
                 try:
-                    progress.update(
-                        task,
-                        description=f"[cyan]Processing: {repo.full_name}"
-                    )
+                    progress.update(task, description=f"[cyan]Processing: {repo.full_name}")
 
                     metadata = metadata_collector.collect_repository_metadata(repo)
                     repository_data.append(metadata)
@@ -180,19 +168,13 @@ def main(org: str,
 
                 except Exception as e:
                     logger.error(f"Failed to process {repo.full_name}: {e}")
-                    failed_repos.append({
-                        "name": repo.full_name,
-                        "error": str(e)
-                    })
+                    failed_repos.append({"name": repo.full_name, "error": str(e)})
                     progress.advance(task)
 
         # Generate output
         console.print("\n[yellow]Generating JSON output...[/yellow]")
         json_generator.generate_output(
-            org_name=org,
-            repositories=repository_data,
-            output_file=output,
-            backup_previous=backup
+            org_name=org, repositories=repository_data, output_file=output, backup_previous=backup
         )
 
         # Display summary
@@ -268,5 +250,5 @@ def main(org: str,
         sys.exit(1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

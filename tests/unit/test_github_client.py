@@ -11,7 +11,7 @@ from src.github_client import GitHubClient
 class TestGitHubClient:
     """Test cases for GitHubClient class."""
 
-    @patch('src.github_client.Github')
+    @patch("src.github_client.Github")
     def test_init_without_base_url(self, mock_github_class):
         """Test initialization without custom base URL."""
         mock_client = MagicMock()
@@ -34,7 +34,7 @@ class TestGitHubClient:
         mock_github_class.assert_called_once_with("test_token")
         assert client.base_url is None
 
-    @patch('src.github_client.Github')
+    @patch("src.github_client.Github")
     def test_init_with_base_url(self, mock_github_class):
         """Test initialization with custom base URL."""
         mock_client = MagicMock()
@@ -55,13 +55,10 @@ class TestGitHubClient:
         base_url = "https://github.example.com/api/v3"
         client = GitHubClient(token="test_token", base_url=base_url)
 
-        mock_github_class.assert_called_once_with(
-            base_url=base_url,
-            login_or_token="test_token"
-        )
+        mock_github_class.assert_called_once_with(base_url=base_url, login_or_token="test_token")
         assert client.base_url == base_url
 
-    @patch('src.github_client.Github')
+    @patch("src.github_client.Github")
     def test_get_organization_success(self, mock_github_class):
         """Test successful organization retrieval."""
         mock_client = MagicMock()
@@ -89,7 +86,7 @@ class TestGitHubClient:
         assert org.login == "test-org"
         mock_client.get_organization.assert_called_once_with("test-org")
 
-    @patch('src.github_client.Github')
+    @patch("src.github_client.Github")
     def test_get_organization_not_found(self, mock_github_class):
         """Test organization not found error."""
         mock_client = MagicMock()
@@ -108,8 +105,7 @@ class TestGitHubClient:
 
         # Mock 404 error
         mock_client.get_organization.side_effect = GithubException(
-            status=404,
-            data={"message": "Not Found"}
+            status=404, data={"message": "Not Found"}
         )
 
         client = GitHubClient(token="test_token")
@@ -117,7 +113,7 @@ class TestGitHubClient:
         with pytest.raises(GithubException):
             client.get_organization("nonexistent-org")
 
-    @patch('src.github_client.Github')
+    @patch("src.github_client.Github")
     def test_get_all_repositories_success(self, mock_github_class):
         """Test successful repository fetching."""
         mock_client = MagicMock()
@@ -154,7 +150,7 @@ class TestGitHubClient:
         assert len(repos) == 1
         assert repos[0].name == "test-repo"
 
-    @patch('src.github_client.Github')
+    @patch("src.github_client.Github")
     def test_get_all_repositories_filter_forks(self, mock_github_class):
         """Test filtering out forks."""
         mock_client = MagicMock()
@@ -194,7 +190,7 @@ class TestGitHubClient:
         assert len(repos) == 1
         assert repos[0].name == "original-repo"
 
-    @patch('src.github_client.Github')
+    @patch("src.github_client.Github")
     def test_get_all_repositories_filter_archived(self, mock_github_class):
         """Test filtering out archived repositories."""
         mock_client = MagicMock()
@@ -234,8 +230,8 @@ class TestGitHubClient:
         assert len(repos) == 1
         assert repos[0].name == "active-repo"
 
-    @patch('src.github_client.Github')
-    @patch('src.github_client.time.sleep')
+    @patch("src.github_client.Github")
+    @patch("src.github_client.time.sleep")
     def test_rate_limit_handling(self, mock_sleep, mock_github_class):
         """Test automatic rate limit handling."""
         mock_client = MagicMock()
@@ -261,18 +257,15 @@ class TestGitHubClient:
         mock_client.get_rate_limit.side_effect = [
             mock_rate_limit_low,  # Initial check
             mock_rate_limit_low,  # After RateLimitExceededException
-            mock_rate_limit_reset  # After sleep
+            mock_rate_limit_reset,  # After sleep
         ]
 
         # Mock organization to raise RateLimitExceededException
         mock_org = MagicMock()
         mock_org.login = "test-org"
         mock_org.get_repos.side_effect = [
-            RateLimitExceededException(
-                status=403,
-                data={"message": "API rate limit exceeded"}
-            ),
-            []  # Success on retry
+            RateLimitExceededException(status=403, data={"message": "API rate limit exceeded"}),
+            [],  # Success on retry
         ]
         mock_client.get_organization.return_value = mock_org
 
@@ -282,3 +275,75 @@ class TestGitHubClient:
         # Verify sleep was called
         assert mock_sleep.called
         assert len(repos) == 0
+
+    @patch("src.github_client.Github")
+    def test_init_authentication_failure(self, mock_github_class):
+        """Test authentication failure during initialization."""
+        mock_client = MagicMock()
+        mock_github_class.return_value = mock_client
+
+        # Mock authentication failure
+        mock_client.get_user.side_effect = GithubException(
+            status=401, data={"message": "Bad credentials"}
+        )
+
+        with pytest.raises(GithubException):
+            GitHubClient(token="invalid_token")
+
+    @patch("src.github_client.Github")
+    def test_get_all_repositories_github_exception(self, mock_github_class):
+        """Test GithubException when fetching repositories."""
+        mock_client = MagicMock()
+        mock_github_class.return_value = mock_client
+
+        # Setup mocks
+        mock_user = MagicMock()
+        mock_user.login = "test-user"
+        mock_client.get_user.return_value = mock_user
+
+        mock_rate_limit = MagicMock()
+        mock_rate_limit.core.remaining = 5000
+        mock_rate_limit.core.limit = 5000
+        mock_rate_limit.core.reset = datetime.now(timezone.utc)
+        mock_client.get_rate_limit.return_value = mock_rate_limit
+
+        # Mock organization that raises exception when getting repos
+        mock_org = MagicMock()
+        mock_org.login = "test-org"
+        mock_org.get_repos.side_effect = GithubException(
+            status=500, data={"message": "Internal Server Error"}
+        )
+        mock_client.get_organization.return_value = mock_org
+
+        client = GitHubClient(token="test_token")
+
+        with pytest.raises(GithubException):
+            client.get_all_repositories("test-org")
+
+    @patch("src.github_client.Github")
+    def test_check_rate_limit_low_remaining(self, mock_github_class):
+        """Test check_rate_limit with low remaining calls."""
+        mock_client = MagicMock()
+        mock_github_class.return_value = mock_client
+
+        # Setup mocks
+        mock_user = MagicMock()
+        mock_user.login = "test-user"
+        mock_client.get_user.return_value = mock_user
+
+        # First call for init, second for check_rate_limit
+        mock_rate_limit_init = MagicMock()
+        mock_rate_limit_init.core.remaining = 5000
+        mock_rate_limit_init.core.limit = 5000
+        mock_rate_limit_init.core.reset = datetime.now(timezone.utc)
+
+        mock_rate_limit_low = MagicMock()
+        mock_rate_limit_low.core.remaining = 50
+        mock_rate_limit_low.core.limit = 5000
+        mock_rate_limit_low.core.reset = datetime.now(timezone.utc)
+
+        mock_client.get_rate_limit.side_effect = [mock_rate_limit_init, mock_rate_limit_low]
+
+        client = GitHubClient(token="test_token")
+        # This should log a warning
+        client.check_rate_limit()

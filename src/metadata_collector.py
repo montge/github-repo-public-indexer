@@ -42,7 +42,7 @@ class MetadataCollector:
                 "license": self._collect_license(repo),
                 "topics": self._collect_topics(repo),
                 "readme_preview": self._collect_readme_preview(repo),
-                "ownership": self._collect_ownership(repo)
+                "ownership": self._collect_ownership(repo),
             }
 
             logger.debug(f"Successfully collected metadata for {repo.full_name}")
@@ -66,7 +66,7 @@ class MetadataCollector:
             "pushed_at": repo.pushed_at.isoformat() if repo.pushed_at else None,
             "size": repo.size,
             "default_branch": repo.default_branch,
-            "visibility": "public" if not repo.private else "private"
+            "visibility": "public" if not repo.private else "private",
         }
 
     def _collect_status(self, repo: Repository.Repository) -> Dict[str, bool]:
@@ -74,14 +74,14 @@ class MetadataCollector:
         return {
             "is_archived": repo.archived,
             "is_fork": repo.fork,
-            "is_template": repo.is_template if hasattr(repo, 'is_template') else False,
-            "is_disabled": repo.disabled if hasattr(repo, 'disabled') else False,
+            "is_template": repo.is_template if hasattr(repo, "is_template") else False,
+            "is_disabled": repo.disabled if hasattr(repo, "disabled") else False,
             "has_issues": repo.has_issues,
             "has_projects": repo.has_projects,
             "has_wiki": repo.has_wiki,
             "has_pages": repo.has_pages,
             "has_downloads": repo.has_downloads,
-            "has_discussions": repo.has_discussions if hasattr(repo, 'has_discussions') else False
+            "has_discussions": repo.has_discussions if hasattr(repo, "has_discussions") else False,
         }
 
     def _collect_activity(self, repo: Repository.Repository) -> Dict[str, Any]:
@@ -107,7 +107,7 @@ class MetadataCollector:
             # Get open PRs count
             open_prs = 0
             try:
-                pulls = repo.get_pulls(state='open')
+                pulls = repo.get_pulls(state="open")
                 open_prs = pulls.totalCount
             except GithubException as e:
                 logger.warning(f"Could not get PRs for {repo.full_name}: {e}")
@@ -120,7 +120,7 @@ class MetadataCollector:
                 "open_pull_requests": open_prs,
                 "last_commit_date": repo.pushed_at.isoformat() if repo.pushed_at else None,
                 "commit_count_30d": commits_30d,
-                "contributor_count": contributor_count
+                "contributor_count": contributor_count,
             }
         except Exception as e:
             logger.error(f"Error collecting activity for {repo.full_name}: {e}")
@@ -132,7 +132,7 @@ class MetadataCollector:
                 "open_pull_requests": 0,
                 "last_commit_date": repo.pushed_at.isoformat() if repo.pushed_at else None,
                 "commit_count_30d": 0,
-                "contributor_count": 0
+                "contributor_count": 0,
             }
 
     def _collect_languages(self, repo: Repository.Repository) -> Dict[str, Any]:
@@ -144,16 +144,15 @@ class MetadataCollector:
 
             # Calculate percentages
             total = sum(languages.values())
-            breakdown = {lang: round((bytes_count / total) * 100, 1)
-                        for lang, bytes_count in languages.items()}
+            breakdown = {
+                lang: round((bytes_count / total) * 100, 1)
+                for lang, bytes_count in languages.items()
+            }
 
             # Primary language is the one with most bytes
             primary = max(languages.items(), key=lambda x: x[1])[0] if languages else None
 
-            return {
-                "primary": primary,
-                "breakdown": breakdown
-            }
+            return {"primary": primary, "breakdown": breakdown}
         except GithubException as e:
             logger.warning(f"Could not get languages for {repo.full_name}: {e}")
             return {"primary": None, "breakdown": {}}
@@ -167,17 +166,12 @@ class MetadataCollector:
                     "key": license_info.license.key,
                     "name": license_info.license.name,
                     "spdx_id": license_info.license.spdx_id,
-                    "url": license_info.license.url
+                    "url": license_info.license.url,
                 }
         except GithubException as e:
             logger.debug(f"No license found for {repo.full_name}: {e}")
 
-        return {
-            "key": None,
-            "name": None,
-            "spdx_id": None,
-            "url": None
-        }
+        return {"key": None, "name": None, "spdx_id": None, "url": None}
 
     def _collect_topics(self, repo: Repository.Repository) -> List[str]:
         """Collect repository topics/tags."""
@@ -187,11 +181,13 @@ class MetadataCollector:
             logger.warning(f"Could not get topics for {repo.full_name}: {e}")
             return []
 
-    def _collect_readme_preview(self, repo: Repository.Repository, max_chars: int = 500) -> Optional[str]:
+    def _collect_readme_preview(
+        self, repo: Repository.Repository, max_chars: int = 500
+    ) -> Optional[str]:
         """Collect preview of README content."""
         try:
             readme = repo.get_readme()
-            content = base64.b64decode(readme.content).decode('utf-8')
+            content = base64.b64decode(readme.content).decode("utf-8")
             # Return first max_chars characters
             preview = content[:max_chars]
             if len(content) > max_chars:
@@ -207,14 +203,11 @@ class MetadataCollector:
             "owner": {
                 "login": repo.owner.login,
                 "type": repo.owner.type,
-                "url": repo.owner.html_url
+                "url": repo.owner.html_url,
             },
             "top_contributors": [],
             "teams": [],
-            "codeowners": {
-                "exists": False,
-                "owners": []
-            }
+            "codeowners": {"exists": False, "owners": []},
         }
 
         # Get top contributors
@@ -223,11 +216,13 @@ class MetadataCollector:
             for i, contributor in enumerate(contributors):
                 if i >= self.max_contributors:
                     break
-                ownership["top_contributors"].append({
-                    "login": contributor.login,
-                    "contributions": contributor.contributions,
-                    "profile_url": contributor.html_url
-                })
+                ownership["top_contributors"].append(
+                    {
+                        "login": contributor.login,
+                        "contributions": contributor.contributions,
+                        "profile_url": contributor.html_url,
+                    }
+                )
         except GithubException as e:
             logger.warning(f"Could not get contributors for {repo.full_name}: {e}")
 
@@ -235,29 +230,26 @@ class MetadataCollector:
         try:
             teams = repo.get_teams()
             for team in teams:
-                ownership["teams"].append({
-                    "name": team.name,
-                    "permission": team.permission
-                })
+                ownership["teams"].append({"name": team.name, "permission": team.permission})
         except GithubException as e:
             logger.debug(f"Could not get teams for {repo.full_name}: {e}")
 
         # Check for CODEOWNERS file
         try:
             codeowners = None
-            for path in ['.github/CODEOWNERS', 'CODEOWNERS', 'docs/CODEOWNERS']:
+            for path in [".github/CODEOWNERS", "CODEOWNERS", "docs/CODEOWNERS"]:
                 try:
                     file = repo.get_contents(path)
-                    codeowners = base64.b64decode(file.content).decode('utf-8')
+                    codeowners = base64.b64decode(file.content).decode("utf-8")
                     ownership["codeowners"]["exists"] = True
                     # Extract owners (lines starting with @)
                     owners = []
-                    for line in codeowners.split('\n'):
+                    for line in codeowners.split("\n"):
                         line = line.strip()
-                        if line and not line.startswith('#'):
+                        if line and not line.startswith("#"):
                             # Extract @mentions
                             words = line.split()
-                            owners.extend([w for w in words if w.startswith('@')])
+                            owners.extend([w for w in words if w.startswith("@")])
                     ownership["codeowners"]["owners"] = list(set(owners))
                     break
                 except GithubException:
