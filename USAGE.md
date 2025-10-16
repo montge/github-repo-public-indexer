@@ -209,11 +209,33 @@ After successful collection:
    jq '.metadata' repositories.json
    ```
 
-3. **Use with Cursor/Windsurf**:
-   - Open `PROMPT_TEMPLATE.md`
-   - Customize the prompt
-   - Attach `repositories.json`
-   - Generate README
+3. **Prepare Target Repository**:
+   ```bash
+   # Clone or create your public-facing repository
+   cd /path/to/workspace
+   git clone git@github.com:yourorg/your-public-repos-index.git
+   cd your-public-repos-index
+
+   # Copy the JSON file
+   cp /path/to/github-repo-public-indexer/repositories.json .
+   ```
+
+4. **Use with Cursor/Windsurf**:
+   - Open Cursor/Windsurf **in your target repository directory**
+   - Open `PROMPT_TEMPLATE.md` from the indexer tool
+   - Customize the prompt (organization name, target repo info)
+   - Attach `repositories.json` (and existing README.md if updating)
+   - Generate/update README
+
+5. **Commit and Publish**:
+   ```bash
+   # In target repository
+   git add README.md repositories.json
+   git commit -m "Update repository index - $(date +%Y-%m-%d)"
+   git push
+   ```
+
+**Note:** The indexer tool uses the GitHub API - you don't need to clone the repositories you're indexing.
 
 ## Advanced Usage
 

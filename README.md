@@ -5,23 +5,28 @@ A two-phase tool for creating comprehensive, public-facing documentation of all 
 ## Quick Start
 
 ```bash
-# 1. Run setup script
+# 1. Setup this indexer tool
 ./setup.sh
+# Edit .env with your credentials
 
-# 2. Edit .env with your GitHub token and org name
-# GITHUB_TOKEN=ghp_your_token_here
-# GITHUB_ORG=your-org-name
-
-# 3. Activate virtual environment
+# 2. Collect repository metadata
 source venv/bin/activate
-
-# 4. Collect repository data
 python collect_repos.py --summary
+# Generates: repositories.json
 
-# 5. Use PROMPT_TEMPLATE.md with Cursor/Windsurf to generate README
+# 3. Prepare your public-facing repository
+cd ../my-org-public-repos  # Your target repo
+cp ../github-repo-public-indexer/repositories.json .
+
+# 4. Generate README with Cursor/Windsurf
+# - Open Cursor/Windsurf in the target repo directory
+# - Use PROMPT_TEMPLATE.md with repositories.json
+# - Review and commit the generated README.md
 ```
 
-See **[USAGE.md](USAGE.md)** for detailed instructions.
+**Important:** The tool fetches metadata via GitHub API - no need to clone all your org's repositories.
+
+See **[USAGE.md](USAGE.md)** and **[WORKFLOW.md](WORKFLOW.md)** for detailed instructions.
 
 ## Overview
 

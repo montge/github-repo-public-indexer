@@ -99,30 +99,83 @@ jq '.metadata' repositories.json
 jq '.repositories | length' repositories.json
 ```
 
-### Step 3: Phase 2 - Documentation Generation
+### Step 3: Prepare Target Repository
 
-#### 3.1 Prepare Cursor/Windsurf
+The target repository is where your generated README.md will be published.
+
+#### Option A: Existing Repository
+
+```bash
+# Clone your existing public-facing repository
+cd /path/to/your/workspace
+git clone git@github.com:yourorg/your-public-repos-index.git
+cd your-public-repos-index
+
+# Copy the generated JSON file here
+cp /path/to/github-repo-public-indexer/repositories.json .
+```
+
+#### Option B: New Repository
+
+```bash
+# Create new repository on GitHub first, then:
+cd /path/to/your/workspace
+mkdir my-org-public-repos
+cd my-org-public-repos
+git init
+git remote add origin git@github.com:yourorg/my-org-public-repos.git
+
+# Copy the generated JSON file here
+cp /path/to/github-repo-public-indexer/repositories.json .
+
+# Create initial commit structure
+echo "# Organization Repository Index" > README.md
+git add README.md repositories.json
+git commit -m "Initial setup"
+git branch -M main
+git push -u origin main
+```
+
+**Important:** The indexer tool does NOT clone the repositories it's indexing. It uses the GitHub API to fetch metadata, so you don't need local copies of all your org's repos.
+
+### Step 4: Phase 2 - Documentation Generation
+
+#### 4.1 Prepare Cursor/Windsurf
 
 1. Open Cursor or Windsurf
-2. Open the output directory or create a new workspace
-3. Have `repositories.json` accessible
+2. **Open the target repository directory** (where README will be published)
+3. Ensure `repositories.json` is in this directory
 
-#### 3.2 Use the Prompt Template
+#### 4.2 Use the Prompt Template
 
 Copy the prompt from `PROMPT_TEMPLATE.md` and customize:
 
 1. Replace `{ORGANIZATION_NAME}` with your organization name
-2. Replace `{ORGANIZATION_DESCRIPTION}` with a brief description
-3. Adjust categorization rules if needed
-4. Add any specific requirements
+2. Replace `{TARGET_REPO_NAME}` with your target repository name
+3. Replace `{TARGET_REPO_URL}` with the target repository URL
+4. Replace `{CREATE_OR_UPDATE}` with "create" or "update"
+5. Replace `{ORGANIZATION_DESCRIPTION}` with a brief description
+6. Replace `{EXISTING_README_INSTRUCTIONS}` based on your scenario:
+   - **New README**: "This is a new README. Create it from scratch."
+   - **Updating existing**: List sections to preserve
+7. Adjust categorization rules if needed
+8. Add any specific requirements
 
-#### 3.3 Submit to AI
+#### 4.3 Submit to AI
 
+**For a NEW README:**
 1. Paste the customized prompt into Cursor/Windsurf
 2. Attach or reference the `repositories.json` file
 3. Let the AI analyze and generate the README
 
-#### 3.4 Review and Refine
+**For UPDATING an existing README:**
+1. Paste the customized prompt into Cursor/Windsurf
+2. Attach BOTH files:
+   - `repositories.json` (new data)
+   - `README.md` (existing file to update)
+3. Let the AI analyze and update the README
+
+#### 4.4 Review and Refine
 
 The AI will generate a draft README. Review for:
 - Accuracy of categorization
@@ -137,14 +190,37 @@ Provide feedback to refine:
 - "Create a visual diagram showing project relationships"
 - "Highlight archived projects more prominently"
 
-#### 3.5 Finalize
+#### 4.5 Finalize and Commit
+
+After reviewing the generated/updated README:
+
+```bash
+# In your target repository directory
+git add README.md
+
+# If you're also publishing the JSON file
+git add repositories.json
+
+# Commit the changes
+git commit -m "Update repository index - $(date +%Y-%m-%d)"
+
+# Push to GitHub
+git push
+```
+
+#### 4.6 Verify on GitHub
+
+Visit your repository URL to see the published README:
+```
+https://github.com/yourorg/your-public-repos-index
+```
 
 Once satisfied:
 1. Save the generated `README.md`
 2. Review one final time
 3. Commit to repository or publish as needed
 
-### Step 4: Publishing (Optional)
+### Step 5: Publishing Options (Optional)
 
 #### 4.1 GitHub Repository
 
@@ -172,7 +248,34 @@ If you have an organization README:
 2. Include highlights or featured projects
 3. Add navigation to the detailed repository index
 
-### Step 5: Maintenance and Updates
+## Recommended Directory Structure
+
+Here's how to organize your workspace:
+
+```
+/your-workspace/
+├── github-repo-public-indexer/          # This tool (cloned from GitHub)
+│   ├── collect_repos.py
+│   ├── src/
+│   ├── .env                             # Your credentials (git-ignored)
+│   ├── repositories.json                # Generated here (git-ignored)
+│   └── ...
+│
+└── my-org-public-repos/                 # Your public-facing index repo
+    ├── README.md                        # Generated/updated by Cursor/Windsurf
+    ├── repositories.json                # Copied from indexer (optional to publish)
+    └── .github/
+        └── workflows/
+            └── update-index.yml         # Optional: automation
+```
+
+**Workflow:**
+1. Run `collect_repos.py` in the indexer tool directory
+2. Copy `repositories.json` to your public repo
+3. Use Cursor/Windsurf in the public repo to generate/update README
+4. Commit and push the public repo
+
+### Step 6: Maintenance and Updates
 
 #### 5.1 Regular Updates
 

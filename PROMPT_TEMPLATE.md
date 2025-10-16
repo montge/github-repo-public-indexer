@@ -7,23 +7,83 @@ This template provides a structured prompt to use with Cursor or Windsurf AI ass
 ## How to Use
 
 1. Copy the prompt below
-2. Replace all placeholders in `{CURLY_BRACES}` with your specific values
-3. Paste into Cursor or Windsurf
-4. Attach or reference the `repositories.json` file
+2. Replace all placeholders in `{CURLY_BRACES}` with your specific values:
+   - `{ORGANIZATION_NAME}` - Your GitHub organization name
+   - `{TARGET_REPO_NAME}` - Name of the repository where README will be stored
+   - `{TARGET_REPO_URL}` - Full URL to the target repository
+   - `{CREATE_OR_UPDATE}` - Either "create" or "update"
+   - `{ORGANIZATION_DESCRIPTION}` - Brief description of your organization
+   - `{EXISTING_README_INSTRUCTIONS}` - See "Existing README Scenarios" below
+   - `{ADD_ANY_SPECIFIC_REQUIREMENTS}` - Any custom requirements
+3. If updating an existing README, attach BOTH the current README.md AND repositories.json
+4. Paste into Cursor or Windsurf
 5. Review and refine the generated output
+
+### Existing README Scenarios
+
+**Scenario 1: Creating a new README (no existing file)**
+```
+{EXISTING_README_INSTRUCTIONS} =
+"This is a new README. Create it from scratch following the structure below."
+```
+
+**Scenario 2: Updating an existing README**
+```
+{EXISTING_README_INSTRUCTIONS} =
+"An existing README.md is attached. Please review it and update the repository information while preserving:
+- The introduction and organizational context
+- The 'How to Contribute' section
+- The 'Code of Conduct' link
+- Any other sections that don't contain repository listings
+Update all repository data, statistics, and the generation timestamp."
+```
+
+**Scenario 3: Major overhaul of existing README**
+```
+{EXISTING_README_INSTRUCTIONS} =
+"An existing README.md is attached but it needs significant restructuring. Review it for any valuable custom content or context, but feel free to reorganize completely based on the new data. Preserve only critical custom sections."
+```
 
 ---
 
 ## PROMPT TEMPLATE
 
 ```
-I have a JSON file containing metadata about all repositories in the {ORGANIZATION_NAME} GitHub organization. I need you to create a comprehensive, public-facing README.md file that documents these repositories in a clear, organized, and easy-to-navigate format.
+I have a JSON file containing metadata about all repositories in the {ORGANIZATION_NAME} GitHub organization. I need you to {CREATE_OR_UPDATE} a comprehensive, public-facing README.md file that documents these repositories in a clear, organized, and easy-to-navigate format.
+
+**Target Repository:** {TARGET_REPO_NAME}
+**Repository URL:** {TARGET_REPO_URL}
 
 ## About the Organization
 
 {ORGANIZATION_DESCRIPTION}
 
 Example: "We are an open-source community focused on data science tools and educational resources. Our repositories range from production-ready libraries to experimental prototypes and archived legacy projects."
+
+## Existing README Handling
+
+{EXISTING_README_INSTRUCTIONS}
+
+**If creating a NEW README:**
+- Start fresh with the structure outlined below
+- Use all data from repositories.json
+
+**If UPDATING an existing README:**
+- Review the existing README.md carefully
+- Preserve any manual sections NOT related to repository listings (e.g., "Contributing", "Code of Conduct", "How to Use This Index", custom introductions)
+- Update the repository listings based on repositories.json
+- Update statistics and metadata (generation date, total count)
+- Maintain the existing categorization scheme if it's working well, or propose improvements
+- Flag any repositories that were in the old README but are missing from the new data
+- Preserve any special formatting or customizations that don't conflict with the data
+
+**Important for Updates:**
+- Do NOT remove custom sections added manually (look for sections that reference things not in repositories.json)
+- Do NOT change the overall tone or voice if a specific style has been established
+- DO update all repository-specific information (names, descriptions, stats, URLs)
+- DO add new repositories that appear in repositories.json
+- DO remove or mark as "No longer available" repositories that are missing from the new data
+- DO preserve any hand-crafted introductions or organizational context
 
 ## Input Data
 
@@ -113,9 +173,12 @@ Create a high-level summary with:
 Include at the bottom:
 - Generation date and time
 - Data collection method
-- Link to the raw JSON file (if published)
+- Note: "This index is automatically generated from repository metadata"
+- Link to the raw JSON file (if published in the same repo)
+- Link to the indexer tool: https://github.com/montge/github-repo-public-indexer
 - How to request updates or corrections
-- Tool version used
+- Tool version used (from metadata.tool_version)
+- Target repository information: {TARGET_REPO_NAME} at {TARGET_REPO_URL}
 
 ### 5. Navigation and Usability
 
@@ -318,3 +381,65 @@ After generation, verify:
 - Provide explicit categorization rules
 - Give examples of which repos belong where
 - Use repository topics/tags to guide categorization
+
+## Complete Example: Creating New README
+
+```
+I have a JSON file containing metadata about all repositories in the Acme Corp GitHub organization. I need you to create a comprehensive, public-facing README.md file that documents these repositories in a clear, organized, and easy-to-navigate format.
+
+**Target Repository:** acme-public-repos
+**Repository URL:** https://github.com/acme/acme-public-repos
+
+## About the Organization
+
+Acme Corp is a technology company building open-source tools for developers. Our repositories include production-ready libraries, command-line tools, and experimental prototypes. We focus on developer experience and automation.
+
+## Existing README Handling
+
+This is a new README. Create it from scratch following the structure below.
+
+**If creating a NEW README:**
+- Start fresh with the structure outlined below
+- Use all data from repositories.json
+
+[... rest of prompt template ...]
+```
+
+## Complete Example: Updating Existing README
+
+```
+I have a JSON file containing metadata about all repositories in the Acme Corp GitHub organization. I need you to update a comprehensive, public-facing README.md file that documents these repositories in a clear, organized, and easy-to-navigate format.
+
+**Target Repository:** acme-public-repos
+**Repository URL:** https://github.com/acme/acme-public-repos
+
+## About the Organization
+
+Acme Corp is a technology company building open-source tools for developers. Our repositories include production-ready libraries, command-line tools, and experimental prototypes. We focus on developer experience and automation.
+
+## Existing README Handling
+
+An existing README.md is attached. Please review it and update the repository information while preserving:
+- The introduction and organizational context
+- The "How to Contribute" section
+- The "Support" section with contact information
+- The "Code of Conduct" link
+- Any other sections that don't contain repository listings
+
+Update all repository data (names, descriptions, stars, last updated dates), statistics, and the generation timestamp. If you notice the categorization could be improved, propose changes but ask before making major structural changes.
+
+**If UPDATING an existing README:**
+- Review the existing README.md carefully
+- Preserve any manual sections NOT related to repository listings
+- Update the repository listings based on repositories.json
+- Update statistics and metadata (generation date, total count)
+- Maintain the existing categorization scheme if it's working well
+- Flag any repositories that were in the old README but are missing from the new data
+- Preserve any special formatting or customizations
+
+[... rest of prompt template ...]
+
+**Files attached:**
+- repositories.json (new data)
+- README.md (current version to update)
+```
