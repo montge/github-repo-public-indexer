@@ -218,19 +218,27 @@ After successful collection:
 
    # Copy the JSON file
    cp /path/to/github-repo-public-indexer/repositories.json .
+
+   # Copy CONTRIBUTING template (first time only)
+   if [ ! -f CONTRIBUTING.md ]; then
+     cp /path/to/github-repo-public-indexer/CONTRIBUTING_TEMPLATE.md CONTRIBUTING.md
+   fi
    ```
 
 4. **Use with Cursor/Windsurf**:
    - Open Cursor/Windsurf **in your target repository directory**
    - Open `PROMPT_TEMPLATE.md` from the indexer tool
    - Customize the prompt (organization name, target repo info)
-   - Attach `repositories.json` (and existing README.md if updating)
-   - Generate/update README
+   - Attach files:
+     - `repositories.json` (new data)
+     - `README.md` (if updating)
+     - `CONTRIBUTING.md` (for customization)
+   - Generate/update README and CONTRIBUTING.md
 
 5. **Commit and Publish**:
    ```bash
    # In target repository
-   git add README.md repositories.json
+   git add README.md repositories.json CONTRIBUTING.md
    git commit -m "Update repository index - $(date +%Y-%m-%d)"
    git push
    ```

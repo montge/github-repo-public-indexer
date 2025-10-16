@@ -250,14 +250,19 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for information about updating this ind
 ```
 
 **CONTRIBUTING.md File:**
-Also generate a CONTRIBUTING.md file using the template from:
-https://github.com/montge/github-repo-public-indexer/blob/main/CONTRIBUTING_TEMPLATE.md
+If a CONTRIBUTING.md file exists in the workspace, customize it by replacing placeholders:
+- Replace `{ORGANIZATION_NAME}` with the actual organization name
+- Replace `{UPDATE_FREQUENCY}` with "monthly", "quarterly", "on-demand", etc.
+- Replace `{INDEX_REPO_NAME}` with {TARGET_REPO_NAME}
+- Replace `{LINK_TO_CODE_OF_CONDUCT}` with actual link or "N/A"
+- Update any other organization-specific details
 
-Customize it with:
-- Organization name
-- Update frequency
-- Link to Code of Conduct (if applicable)
-- Contact information
+If CONTRIBUTING.md doesn't exist, create it using the template structure with:
+- Clear instructions for requesting updates
+- Process for reporting issues
+- Guidelines for contributing to listed projects
+- Steps to regenerate the index manually
+- Contact information and links
 
 ### 5. Navigation and Usability
 
@@ -287,7 +292,12 @@ Examples:
 
 ## Output
 
-Generate a complete README.md file following the requirements above. Format it using proper Markdown syntax so it's ready to commit to a GitHub repository.
+Generate the following files:
+
+1. **README.md** - Complete repository index following all requirements above
+2. **CONTRIBUTING.md** (if exists in workspace) - Customize with organization details
+
+Format both using proper Markdown syntax so they're ready to commit to a GitHub repository.
 
 Please analyze the repositories.json file and create the documentation now.
 ```

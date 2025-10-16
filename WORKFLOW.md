@@ -118,6 +118,13 @@ fi
 
 # Copy the newly generated JSON file
 cp /path/to/github-repo-public-indexer/repositories.json .
+
+# Copy CONTRIBUTING template if it doesn't exist
+if [ ! -f CONTRIBUTING.md ]; then
+  cp /path/to/github-repo-public-indexer/CONTRIBUTING_TEMPLATE.md CONTRIBUTING.md
+  echo "✓ Copied CONTRIBUTING_TEMPLATE.md to CONTRIBUTING.md"
+  echo "  Please customize it with your organization details"
+fi
 ```
 
 **Best Practice:** Keep `repositories.json` in your public repository for:
@@ -138,13 +145,20 @@ git remote add origin git@github.com:yourorg/my-org-public-repos.git
 # Copy the generated JSON file here
 cp /path/to/github-repo-public-indexer/repositories.json .
 
+# Copy CONTRIBUTING template
+cp /path/to/github-repo-public-indexer/CONTRIBUTING_TEMPLATE.md CONTRIBUTING.md
+
 # Create initial commit structure
 echo "# Organization Repository Index" > README.md
-git add README.md repositories.json
-git commit -m "Initial setup"
+echo "This index will be automatically generated. See CONTRIBUTING.md for details." >> README.md
+
+git add README.md repositories.json CONTRIBUTING.md
+git commit -m "Initial setup with CONTRIBUTING.md"
 git branch -M main
 git push -u origin main
 ```
+
+**Note:** Remember to customize CONTRIBUTING.md with your organization's details before the first commit or during Phase 2 generation.
 
 **Important:** The indexer tool does NOT clone the repositories it's indexing. It uses the GitHub API to fetch metadata, so you don't need local copies of all your org's repos.
 
@@ -175,8 +189,11 @@ Copy the prompt from `PROMPT_TEMPLATE.md` and customize:
 
 **For a NEW README:**
 1. Paste the customized prompt into Cursor/Windsurf
-2. Attach or reference the `repositories.json` file
+2. Attach or reference:
+   - `repositories.json` file
+   - `CONTRIBUTING.md` (for customization)
 3. Let the AI analyze and generate the README
+4. AI will also customize CONTRIBUTING.md with your organization details
 
 **For UPDATING an existing README:**
 1. Paste the customized prompt into Cursor/Windsurf
@@ -210,6 +227,9 @@ After reviewing the generated/updated README:
 ```bash
 # In your target repository directory
 git add README.md repositories.json
+
+# If CONTRIBUTING.md was customized
+git add CONTRIBUTING.md
 
 # Optional: Remove the comparison file (or keep for history)
 # git rm repositories.previous.json
