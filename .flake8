@@ -1,0 +1,22 @@
+[flake8]
+# Allow slightly longer lines (Black uses 88, but we allow up to 100 for flexibility)
+max-line-length = 100
+# Extend default ignore list
+extend-ignore =
+    # F541: f-string without placeholders (sometimes used for consistency)
+    F541,
+# Exclude common non-source directories
+exclude =
+    .git,
+    __pycache__,
+    build,
+    dist,
+    .eggs,
+    *.egg-info,
+    .venv,
+    venv,
+    ENV,
+    env,
+    .tox,
+    htmlcov,
+    .pytest_cache

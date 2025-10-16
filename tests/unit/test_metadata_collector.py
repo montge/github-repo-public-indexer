@@ -3,7 +3,7 @@
 import pytest
 import base64
 from datetime import datetime, timezone
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 from github import GithubException
 from src.metadata_collector import MetadataCollector
 

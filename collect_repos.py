@@ -20,10 +20,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import os
 import sys
 import logging
-from pathlib import Path
 from typing import Optional
 
 import click
@@ -66,7 +64,8 @@ def setup_logging(verbose: bool = False):
     "-u",
     envvar="GITHUB_URL",
     default=None,
-    help="GitHub API base URL (for GitHub Enterprise Server, e.g., https://github.example.com/api/v3)",
+    help="GitHub API base URL (for GitHub Enterprise Server, "
+    "e.g., https://github.example.com/api/v3)",
 )
 @click.option(
     "--output",

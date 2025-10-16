@@ -1,7 +1,7 @@
 """Unit tests for src/github_client.py"""
 
 import pytest
-from unittest.mock import Mock, MagicMock, patch
+from unittest.mock import MagicMock, patch
 from datetime import datetime, timezone, timedelta
 from github import GithubException, RateLimitExceededException
 from src.github_client import GitHubClient
