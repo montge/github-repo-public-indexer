@@ -21,6 +21,26 @@ source venv/bin/activate  # Linux/Mac
 
 # Install dependencies
 pip install -r requirements.txt
+
+# Install development dependencies (testing, linting)
+pip install -r requirements-dev.txt
+```
+
+### Testing
+```bash
+# Run all tests with coverage
+pytest
+
+# Run only unit tests
+pytest tests/unit -m unit
+
+# Run with coverage report
+pytest --cov=src --cov=collect_repos --cov-report=html
+
+# Run linting and type checking
+black --check src tests collect_repos.py
+flake8 src tests collect_repos.py
+mypy src collect_repos.py
 ```
 
 ### Running the Tool

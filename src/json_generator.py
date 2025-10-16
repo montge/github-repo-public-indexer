@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 class JSONGenerator:
     """Handles JSON generation and validation."""
 
-    def __init__(self, tool_version: str = "1.0.0"):
+    def __init__(self, tool_version: str = "0.1.0"):
         """
         Initialize JSON generator.
 

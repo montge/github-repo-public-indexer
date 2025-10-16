@@ -60,22 +60,27 @@ A **two-phase automated approach**:
 
 ## Project Status
 
+**Current Version:** 0.1.0 (Pre-release)
+
 - [x] Requirements gathering
 - [x] Specification documentation
 - [x] JSON schema design
 - [x] Workflow documentation
 - [x] Prompt template creation
 - [x] **Phase 1 script implementation (Python)**
+- [x] **Testing infrastructure (pytest, CI/CD)**
+- [ ] Achieve 95% test coverage
 - [ ] Testing with sample organization
 - [ ] Phase 2 validation with Cursor/Windsurf
 - [ ] Refinement and optimization
-- [ ] Production deployment
+- [ ] Production deployment (v1.0.0)
 
 ## Documentation
 
 ### Quick References
 - **[USAGE.md](USAGE.md)** - Installation and usage guide
 - **[QUICK_REFERENCE.md](QUICK_REFERENCE.md)** - One-page summary
+- **[TESTING.md](TESTING.md)** - Testing guide and best practices
 - **[CLAUDE.md](CLAUDE.md)** - Guide for Claude Code development
 
 ### Design and Architecture
@@ -132,11 +137,12 @@ Key features:
 
 ## Technology Stack
 
-- **Python 3.8+**
+- **Python 3.8+** (tested on 3.8-3.12)
 - **PyGithub** - GitHub API client
 - **Click** - CLI framework
 - **Rich** - Beautiful terminal output
 - **python-dotenv** - Environment management
+- **pytest** - Testing framework with 95% coverage target
 
 ## Contributing
 

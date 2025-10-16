@@ -86,6 +86,8 @@ temp/
 htmlcov/
 .pytest_cache/
 .tox/
+coverage.xml
+.hypothesis/
 
 # CI/CD
 .github/workflows/secrets.yml
